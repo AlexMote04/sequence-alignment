@@ -4,24 +4,31 @@
 #include <string>
 #include <memory>
 
-int main()
+int main(int argc, char *argv[])
 {
-  // Temp before implementing argv
-  std::string s1 = "GACATACA";
-  std::string s2 = "CAT";
-  std::string algo_name = "nw";
-
   // Scoring
-  int gap = -2;
-  int match = 1;
-  int mismatch = -1;
+  int GAP = -2;
+  int MATCH = 1;
+  int MISMATCH = -1;
+
+  // Check that we have the correct number of arguments
+  if (argc != 3)
+  {
+    std::cerr << "Usage: " << argv[0] << " <SEQUENCE1> <SEQUENCE2>" << std::endl;
+    return 1;
+  }
+
+  // Get sequences from command-line arguments
+  std::string s1 = argv[1];
+  std::string s2 = argv[2];
+  std::string algo_name = "nw";
 
   try
   {
     // Use the factory to get the correct algorithm object.
     // 'aligner' is a smart pointer to the interface, not a concrete class.
     std::unique_ptr<ISequenceAligner> aligner =
-        create_aligner(algo_name, gap, match, mismatch);
+        create_aligner(algo_name, GAP, MATCH, MISMATCH);
 
     // Perform the alignment
     aligner->align(s1, s2);
