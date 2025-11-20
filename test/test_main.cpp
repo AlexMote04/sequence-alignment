@@ -14,6 +14,36 @@ protected:
   }
 };
 
+// --- Unit Tests ---
+TEST_F(NeedlemanWunschTest, TestIndex1DCalculation)
+{
+  aligner->align("A", "BAC");
+
+  // Accessing private function index_1D
+  EXPECT_EQ(aligner->index_1D(0, 0), 0);
+  EXPECT_EQ(aligner->index_1D(0, 3), 3);
+  EXPECT_EQ(aligner->index_1D(1, 0), 4);
+  EXPECT_EQ(aligner->index_1D(1, 2), 6);
+}
+
+TEST_F(NeedlemanWunschTest, TestSubstitutionScoreMismatch)
+{
+  aligner->align("A", "B");
+
+  // Accessing private function substitution_score
+  EXPECT_EQ(aligner->substitution_score(1, 1), -1);
+}
+
+TEST_F(NeedlemanWunschTest, TestSubstitutionScoreMatch)
+{
+  aligner->align("C", "C");
+  EXPECT_EQ(aligner->substitution_score(1, 1), 1);
+}
+
+// TODO: Create tests to check if the score matrix has been filled correctly
+// TODO: Create tests to check if the traceback matrix has been filled correctly
+
+// --- System Tests ---
 // Test case for two empty strings
 TEST_F(NeedlemanWunschTest, EmptyStrings)
 {

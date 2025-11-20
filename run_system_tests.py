@@ -52,7 +52,7 @@ def get_my_program_score(seq1: str, seq2: str) -> int:
     )
 
     if result.returncode != 0:
-        print(f"--- C++ Program Error ---")
+        print("--- C++ Program Error ---")
         print(result.stderr)
         raise RuntimeError("Your C++ program crashed.")
 
@@ -60,14 +60,14 @@ def get_my_program_score(seq1: str, seq2: str) -> int:
     # We look for the line "Optimal Score: X"
     match = re.search(r"Optimal Score: (-?\d+)", result.stdout)
     if not match:
-        print(f"--- C++ Program Output ---")
+        print("--- C++ Program Output ---")
         print(result.stdout)
         raise ValueError("Could not parse the 'Optimal Score' from C++ output.")
 
     return int(match.group(1))
 
 # Test Helper
-def generate_random_sequence(max_len:int = 20) -> str:
+def generate_random_sequence(max_len:int = 50) -> str:
     """Generates a random DNA sequence."""
     length = random.randint(0, max_len)
     return "".join(random.choice("ATGC") for _ in range(length))
@@ -91,15 +91,15 @@ def run_tests():
             assert my_score == oracle_score
             print(" PASSED")
 
-        except Exception as e:
-            print(f" FAILED!")
+        except AssertionError as e:
+            print(" FAILED!")
             print(f"  Sequences: '{s1}', '{s2}'")
             print(f"  Oracle Score (Biopython): {oracle_score}")
             print(f"  My Score (C++):         {my_score}")
             print(f"  Error: {e}")
             sys.exit(1) # Stop on first failure
 
-    print("\n--- All {NUM_TESTS} System Tests Passed! ---")
+    print(f"\n--- All {NUM_TESTS} System Tests Passed! ---")
 
 if __name__ == "__main__":
     run_tests()

@@ -22,6 +22,12 @@ public:
   // Gets the optimal alignment score.
   virtual int get_optimal_score() const = 0;
 
+  // Gets the vector representing the optimal score matrix
+  virtual std::vector<int> get_optimal_score_matrix() const = 0;
+
+  // Gets the vector representing the traceback matrix
+  virtual std::vector<unsigned char> get_traceback_matrix() const = 0;
+
   // Gets a vector of all optimal alignment pairs.
   virtual std::vector<AlignmentPair> get_formatted_alignments() const = 0;
 

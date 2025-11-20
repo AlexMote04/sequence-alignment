@@ -38,6 +38,16 @@ int NeedlemanWunsch::get_optimal_score() const
   return score_matrix[index_1D(M - 1, N - 1)];
 }
 
+std::vector<int> NeedlemanWunsch::get_optimal_score_matrix() const
+{
+  return score_matrix;
+}
+
+std::vector<unsigned char> NeedlemanWunsch::get_traceback_matrix() const
+{
+  return traceback_matrix;
+}
+
 std::vector<AlignmentPair> NeedlemanWunsch::get_formatted_alignments() const
 {
   std::vector<AlignmentPair> alignment_pairs;

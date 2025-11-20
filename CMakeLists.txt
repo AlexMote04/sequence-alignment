@@ -21,7 +21,7 @@ FetchContent_MakeAvailable(googletest)
 
 # This compiles the NeedlemanWunsch code into a library
 add_library(aligner_lib
-  src/NeedlemanWunsch.cpp
+  src/cpu/NeedlemanWunsch.cpp
 )
 
 # Tell the library where to find its headers in the 'include/' folder.
@@ -29,6 +29,9 @@ add_library(aligner_lib
 target_include_directories(aligner_lib PUBLIC 
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+# Link gtest so the library can find <gtest/gtest_prod.h>
+target_link_libraries(aligner_lib PUBLIC gtest)
 
 # --- Testing ---
 
