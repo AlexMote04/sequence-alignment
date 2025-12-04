@@ -1,55 +1,62 @@
-# Set the minimum required version of CMake
-# FetchContent needs at least 3.11
-cmake_minimum_required(VERSION 3.11)
-project(SequenceAligner)
+cmake_minimum_required(VERSION 3.18)
 
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# 1. Project Setup
+# We enable both C++ and CUDA languages
+project(NeedlemanWunsch LANGUAGES CXX CUDA)
 
-# Find GTest
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CUDA_STANDARD 14)
+
+# Optimization Flags (Host and Device)
+if(MSVC)
+    add_compile_options(/O2)
+else()
+    add_compile_options(-O3)
+endif()
+
+# 1. Find the CUDA Toolkit
+find_package(CUDAToolkit REQUIRED)
+
+# 2. Source Files
+# We group the core logic files here
+set(NW_SOURCES
+    nw_strategy.h
+    CudaBasicNW.cu
+)
+
+# 3. Main Benchmark Executable
+add_executable(nw_benchmark main.cpp ${NW_SOURCES})
+
+# This adds the include paths for <cuda_runtime.h> to main.cpp
+target_link_libraries(nw_benchmark PRIVATE CUDA::cudart)
+
+# Tell CMake to use the CUDA compiler for .cu files
+set_target_properties(nw_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+# -----------------------------------------------------------------------------
+# 4. Google Test Setup (Automatically downloads GTest)
+# -----------------------------------------------------------------------------
 include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
-# Make GTest available, but don't build its tests
-set(GTEST_DISABLE_TESTS_PROJECT ON) 
+# For Windows: Prevent GTest from overriding our compiler runtime settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# --- Library Definition ---
+# -----------------------------------------------------------------------------
+# 5. Test Executable
+# -----------------------------------------------------------------------------
+add_executable(nw_tests test_nw.cpp ${NW_SOURCES})
 
-# This compiles the NeedlemanWunsch code into a library
-add_library(aligner_lib
-  src/cpu/NeedlemanWunsch.cpp
-)
+# Link GTest
+target_link_libraries(nw_tests PRIVATE gtest_main)
 
-# Tell the library where to find its headers in the 'include/' folder.
-# PUBLIC means anyone who links to aligner_lib will also get this include path.
-target_include_directories(aligner_lib PUBLIC 
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+# FIX: Link CUDA Runtime to tests as well!
+target_link_libraries(nw_tests PRIVATE CUDA::cudart)
+set_target_properties(nw_tests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
-# Link gtest so the library can find <gtest/gtest_prod.h>
-target_link_libraries(aligner_lib PUBLIC gtest)
-
-# --- Testing ---
-
-# This enables the 'ctest' command
+# Enable CTest (so you can run "ctest" in terminal)
 enable_testing()
-
-# This tells CMake to look in the 'test' folder
-# and process the CMakeLists.txt file it finds there.
-add_subdirectory(test)
-
-# --- Main Executable ---
-
-# Add an executable target named 'sequence_aligner'
-add_executable(sequence_aligner
-    src/main.cpp
-)
-
-# Link the executable against the library.
-# This gives the executable all the code from aligner_lib
-# and also gives it the include path from target_include_directories.
-target_link_libraries(sequence_aligner PRIVATE aligner_lib)
+add_test(NAME AllTests COMMAND nw_tests)
