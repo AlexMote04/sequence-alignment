@@ -80,7 +80,7 @@ __global__ void needleman_wunsch_block(const char *A, const char *B, int lenA, i
 }
 
 // ------------------------------------------------------------------
-// CRITICAL: The Wrapper Function to be called from C++
+// The Wrapper Function to be called from C++
 // ------------------------------------------------------------------
 extern "C" void launch_nw_kernel_wrapper(const char *d_A, const char *d_B, int *d_matrix, int lenA, int lenB, int match, int mismatch, int gap)
 {

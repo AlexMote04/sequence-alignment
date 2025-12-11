@@ -19,15 +19,8 @@ std::string generate_random_sequence(int length)
   return seq;
 }
 
-int main()
+int benchmark_pairwise(int lenA, int lenB)
 {
-  srand(time(0));
-
-  // 1. Setup Test Data
-  // NOTE: Keep lenA <= 1024 for the basic kernel!
-  int lenA = 1000;
-  int lenB = 1000;
-
   std::string seqA = generate_random_sequence(lenA);
   std::string seqB = generate_random_sequence(lenB);
 
@@ -38,7 +31,7 @@ int main()
   CpuNaiveNW cpuStrategy(1, -1, -2);
   CudaBasicNW cudaStrategy(1, -1, -2);
 
-  // 3. CORRECTNESS CHECK (Critical for Project)
+  // 3. CORRECTNESS CHECK
   std::cout << "\n--- Verifying Correctness ---\n";
   std::vector<int> cpuResult((lenA + 1) * (lenB + 1));
   std::vector<int> gpuResult((lenA + 1) * (lenB + 1));
@@ -72,7 +65,42 @@ int main()
   strategies.push_back(&cudaStrategy);
 
   // You can run multiple iterations or different sizes here
-  benchmarker.run_comparison(strategies, seqA, seqB);
+  benchmarker.run_pairwise_comparison(strategies, seqA, seqB);
+  return 0;
+}
+
+int benchmark_db_search(int queryLen, int targetLen, int numTargets)
+{
+
+  std::string query = generate_random_sequence(queryLen);
+  std::vector<std::string> targets;
+  for (int i = 0; i < numTargets; i++)
+  {
+    targets.push_back(generate_random_sequence(targetLen));
+  }
+
+  CpuNaiveNW cpuStrategy(1, -1, -2);
+  CudaDatabaseNW cudaStrategy(1, -1, -2);
+
+  std::cout << "\n--- Starting Benchmark ---\n";
+  Benchmarker benchmarker;
+
+  std::vector<NeedlemanWunschBase *> strategies;
+  strategies.push_back(&cpuStrategy);
+  strategies.push_back(&cudaStrategy);
+
+  benchmarker.run_database_search_comparison(strategies, query, targets);
+  return 0;
+}
+
+int main()
+{
+  srand(time(0));
+
+  int lenA = 1000;
+  int lenB = 1000;
+
+  benchmark_db_search(lenA, lenB, 10000);
 
   return 0;
 }
