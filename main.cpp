@@ -54,7 +54,7 @@ int main()
     std::cout << "[PASS] Scores match! (" << cpuScore << ")\n";
 
     // Run traceback on one of them to see alignment
-    auto alignment = cudaStrategy.runTraceback(seqA, seqB, lenA, lenB, gpuResult);
+    auto alignment = cudaStrategy.run_traceback(seqA, seqB, lenA, lenB, gpuResult);
     std::cout << "Alignment Length: " << alignment.first.length() << "\n";
   }
   else
@@ -72,7 +72,7 @@ int main()
   strategies.push_back(&cudaStrategy);
 
   // You can run multiple iterations or different sizes here
-  benchmarker.runComparison(strategies, seqA, seqB);
+  benchmarker.run_comparison(strategies, seqA, seqB);
 
   return 0;
 }

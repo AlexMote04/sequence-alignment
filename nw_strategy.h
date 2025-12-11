@@ -116,7 +116,7 @@ public:
   {
     int width = lenB + 1;
 
-    // Initialize Boundaries (CPU still needs to do this manually)
+    // Initialize Boundaries
     for (int i = 0; i <= lenA; i++)
       scoreMatrix[get_index(i, 0, width)] = i * gap_penalty;
     for (int j = 0; j <= lenB; j++)
@@ -156,7 +156,6 @@ public:
 
   std::string get_name() const override { return "CUDA Basic Global Memory"; }
 
-  // FIXED: Signature now matches Base Class (lenA/lenB before scoreMatrix)
   void compute_score_matrix(const std::string &seqA, const std::string &seqB, int lenA, int lenB, std::vector<int> &scoreMatrix) override
   {
     int width = lenB + 1;
@@ -192,9 +191,9 @@ public:
 class Benchmarker
 {
 public:
-  void runComparison(std::vector<NeedlemanWunschBase *> strategies,
-                     const std::string &seqA,
-                     const std::string &seqB)
+  void run_comparison(std::vector<NeedlemanWunschBase *> strategies,
+                      const std::string &seqA,
+                      const std::string &seqB)
   {
 
     int lenA = seqA.length();
@@ -208,7 +207,6 @@ public:
       std::fill(resultMatrix.begin(), resultMatrix.end(), 0);
       auto start = std::chrono::high_resolution_clock::now();
 
-      // FIXED: Arguments passed in correct order (lenA, lenB, then matrix)
       strategy->compute_score_matrix(seqA, seqB, lenA, lenB, resultMatrix);
 
       auto end = std::chrono::high_resolution_clock::now();

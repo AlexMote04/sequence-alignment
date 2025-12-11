@@ -21,7 +21,7 @@ find_package(CUDAToolkit REQUIRED)
 # We group the core logic files here
 set(NW_SOURCES
     nw_strategy.h
-    CudaBasicNW.cu
+    kernels/nw_basic.cu
 )
 
 # 3. Main Benchmark Executable

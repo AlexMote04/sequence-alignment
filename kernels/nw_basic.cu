@@ -28,13 +28,13 @@ __global__ void init_boundaries(int *score_matrix, int lenA, int lenB, int gap_p
 // ------------------------------------------------------------------
 __global__ void needleman_wunsch_block(const char *A, const char *B, int lenA, int lenB, int match, int mismatch, int gap_penalty, int *score_matrix)
 {
-  extern __shared__ int smem[];
+  extern __shared__ char smem_chars[];
 
-  char *smem_chars = (char *)smem;
   char *s_A = smem_chars;
   char *s_B = smem_chars + lenA;
 
   int tid = threadIdx.x;
+  int width = lenB + 1;
 
   if (tid < lenA)
     s_A[tid] = A[tid];
@@ -52,7 +52,6 @@ __global__ void needleman_wunsch_block(const char *A, const char *B, int lenA, i
 
     if (active)
     {
-      int width = lenB + 1;
       int idx = i * width + j;
 
       int val_north = score_matrix[(i - 1) * width + j];
